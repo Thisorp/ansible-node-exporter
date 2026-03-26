@@ -1,0 +1,10 @@
+node_exporter_binary_src: "../files/node_exporter"
+node_exporter_binary_dest: "/usr/local/bin/node_exporter"
+
+node_exporter_user: "node_exporter"
+node_exporter_group: "node_exporter"
+
+node_exporter_service_name: "node_exporter"
+node_exporter_service_file: "/etc/systemd/system/node_exporter.service"
+
+node_exporter_listen_port: "9100"

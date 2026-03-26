@@ -1,0 +1,69 @@
+- name: Install node_exporter from pre-extracted binary
+  hosts: node_exporters
+  gather_facts: yes
+  become: yes
+  serial: 10
+
+  tasks:
+    - name: Ensure node_exporter group exists
+      group:
+        name: "{{ node_exporter_group }}"
+        system: yes
+        state: present
+
+    - name: Ensure node_exporter user exists
+      user:
+        name: "{{ node_exporter_user }}"
+        group: "{{ node_exporter_group }}"
+        system: yes
+        create_home: no
+        shell: /bin/false
+        state: present
+
+    - name: Copy node_exporter binary to remote host
+      copy:
+        src: "{{ node_exporter_binary_src }}"
+        dest: "{{ node_exporter_binary_dest }}"
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Check node_exporter version
+      command: /usr/local/bin/node_exporter --version
+      changed_when: false
+
+    - name: Deploy systemd service file
+      template:
+        src: "../templates/node_exporter.service.j2"
+        dest: "{{ node_exporter_service_file }}"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start node_exporter
+      systemd:
+        name: "{{ node_exporter_service_name }}"
+        enabled: yes
+        state: started
+
+    - name: Check service active
+      command: systemctl is-active {{ node_exporter_service_name }}
+      register: node_exporter_status
+      changed_when: false
+
+    - name: Show service status
+      debug:
+        msg: "{{ inventory_hostname }} => {{ node_exporter_status.stdout }}"
+
+    - name: Check node_exporter metrics endpoint locally
+      shell: "curl -fsS http://127.0.0.1:{{ node_exporter_listen_port }}/metrics | head -n 5"
+      register: metrics_output
+      changed_when: false
+
+    - name: Show metric output
+      debug:
+        var: metrics_output.stdout_lines

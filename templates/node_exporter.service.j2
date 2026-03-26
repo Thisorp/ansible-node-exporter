@@ -1,0 +1,36 @@
+[Unit]
+Description=Node Exporter
+After=network.target
+Wants=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+
+ExecStart=/usr/local/bin/node_exporter
+
+# Security Settings
+ProtectHome=true
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+
+# Resources
+LimitNPROC=8192
+LimitNOFILE=65535
+LimitCORE=infinity
+
+# Restart
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

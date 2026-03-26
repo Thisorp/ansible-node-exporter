@@ -1,0 +1,39 @@
+- name: Uninstall node_exporter
+  hosts: node_exporters
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Stop node_exporter service
+      systemd:
+        name: "{{ node_exporter_service_name }}"
+        state: stopped
+        enabled: no
+      failed_when: false
+
+    - name: Remove systemd service file
+      file:
+        path: "{{ node_exporter_service_file }}"
+        state: absent
+
+    - name: Remove binary
+      file:
+        path: "{{ node_exporter_binary_dest }}"
+        state: absent
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Remove node_exporter user
+      user:
+        name: "{{ node_exporter_user }}"
+        state: absent
+        remove: no
+      failed_when: false
+
+    - name: Remove node_exporter group
+      group:
+        name: "{{ node_exporter_group }}"
+        state: absent
+      failed_when: false
