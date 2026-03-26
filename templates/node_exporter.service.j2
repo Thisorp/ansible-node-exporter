@@ -1,0 +1,13 @@
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=setup
+ExecStart=/home/setup/node_exporter/bin/node_exporter \
+  --web.listen-address=:9100 \
+  --collector.textfile.directory=/home/setup/node_exporter/textfile_collector
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

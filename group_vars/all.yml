@@ -1,0 +1,14 @@
+node_exporter_version: "1.10.2"
+node_exporter_package_name: "node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+node_exporter_extract_dir: "node_exporter-{{ node_exporter_version }}.linux-amd64"
+
+deploy_user: "setup"
+deploy_group: "setup"
+
+install_root: "/home/setup/node_exporter"
+package_dir: "{{ install_root }}/packages"
+bin_dir: "{{ install_root }}/bin"
+textfile_dir: "{{ install_root }}/textfile_collector"
+log_dir: "{{ install_root }}/logs"
+
+listen_port: "9100"
